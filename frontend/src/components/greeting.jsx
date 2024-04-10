@@ -1,4 +1,5 @@
 const Greetings = () => {
+  const user = "Usmael";
     const time = new Date().getHours();
     let greeting;
   
@@ -9,7 +10,7 @@ const Greetings = () => {
     } else {
       greeting = "Good Evening";
     }
-    return <h1 className="text-2xl font-bold">{greeting}</h1>;
+    return <h1 className="text-2xl font-bold">{greeting},{user}</h1>;
   }
 
 export default Greetings;
