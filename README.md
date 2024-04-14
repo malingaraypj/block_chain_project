@@ -1,4 +1,7 @@
 # Blockchain based Digital Rights Management 
+[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=code+coverage&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/)
+[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=active+issues&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/)
+
 
 ## Introduction
 
