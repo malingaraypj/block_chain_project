@@ -1,7 +1,16 @@
 # Blockchain based Digital Rights Management 
-[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=code+coverage&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/)
-[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=active+issues&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/)
-
+<!--[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=code+coverage&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/) 
+[![DeepSource](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM.svg/?label=active+issues&show_trend=true&token=5dzgTcFCpBvHj9FAAEoXnerG)](https://app.deepsource.com/gh/Usmaelabdureman/Blockchain-based-DRM/) -->
+<p>
+   <a href="https://github.com/Hailemari/Blockchain-based-DRM/graphs/contributors">
+      <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/Hailemari/Blockchain-based-DRM" />
+  </a>
+  
+  <!-- <a href="https://codecov.io/gh/Hailemari/Blockchain-based-DRM">
+      <img alt="Tests Coverage" src="https://codecov.io/gh/Hailemari/Blockchain-based-DRM/branch/master/graph/badge.svg" />
+    </a> -->
+    
+</p>
 
 ## Introduction
 
