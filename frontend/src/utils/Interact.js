@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import ContentPlatform from './ContentPlatform.json';
 
-const contractAddress = '0xD02E14654765d3c308C287c06e0e222ff30FAA55';
+const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Local hardhat default deployment address
 
 const apiUrl = 'http://localhost:5000/auth';
 

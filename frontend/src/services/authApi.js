@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const BASE_URL = 'https://manage-content.onrender.com/';
+const BASE_URL = 'http://localhost:5000/';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: BASE_URL,
@@ -17,6 +17,14 @@ export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery,
   endpoints: (builder) => ({
+    uploadFile: builder.mutation({
+      query: (formData) => ({
+        url: 'files/upload',
+        method: 'POST',
+        body: formData,
+        formData: true,
+      }),
+    }),
     signup: builder.mutation({
       query: (body) => ({
         url: 'auth/signup',
@@ -100,5 +108,5 @@ export const {
   useGetUserQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  
+  useUploadFileMutation,
 } = authApi;

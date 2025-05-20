@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { Oval } from 'react-loader-spinner';
+import { useUploadFileMutation } from '../services/authApi';
 const pinataJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI0ZDlmNGJhZS1hYzlhLTQxNzUtYTQ4NC0wYWM0NWI2ZjRlZjYiLCJlbWFpbCI6ImhhaWxlbWFyaWFta2VmYWxlMTlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInBpbl9wb2xpY3kiOnsicmVnaW9ucyI6W3siaWQiOiJGUkExIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9LHsiaWQiOiJOWUMxIiwiZGVzaXJlZFJlcGxpY2F0aW9uQ291bnQiOjF9XSwidmVyc2lvbiI6MX0sIm1mYV9lbmFibGVkIjpmYWxzZSwic3RhdHVzIjoiQUNUSVZFIn0sImF1dGhlbnRpY2F0aW9uVHlwZSI6InNjb3BlZEtleSIsInNjb3BlZEtleUtleSI6Ijc2ZWQ2NjU5ZmI1OTgxOGEzYWE2Iiwic2NvcGVkS2V5U2VjcmV0IjoiODk1ZWQwNmY3ODJiOWJkM2QyMmVlZDIyZWRlMTk0MmU0N2MwOTlmODc4NDA2NWUzODY5ODFmOWI4ZjViYzIzYSIsImlhdCI6MTcxODE4MTAyOX0.ZuXd19P02gV545n2VWzNQZ42qzZ21yzgJIudZ6kzPTY';
 import { submitContentForReview, getCreatorContents, fetchSalesData } from '../utils/Interact';
 import { toast } from 'react-toastify';
@@ -112,6 +113,8 @@ const UploadContent = () => {
     setFile(event.target.files[0]);
   };
 
+  const [uploadFile] = useUploadFileMutation();
+
   const handleUpload = async () => {
     if (!provider) {
       toast.error('Please connect to MetaMask first.');
@@ -149,8 +152,14 @@ const UploadContent = () => {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('filename', title);
+      formData.append('fileDescription', description);
+      formData.append('ownerName', account);
+      formData.append('dateCreated', new Date().toISOString());
+      formData.append('price', price);
 
-      const res = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+      // Upload to IPFS first
+      const ipfsRes = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${pinataJwt}`
@@ -158,12 +167,12 @@ const UploadContent = () => {
         body: formData
       });
 
-      if (!res.ok) {
-        throw new Error(`Error: ${res.status} - ${res.statusText}`);
+      if (!ipfsRes.ok) {
+        throw new Error(`Error: ${ipfsRes.status} - ${ipfsRes.statusText}`);
       }
 
-      const result = await res.json();
-      const ipfsHash = result.IpfsHash;
+      const ipfsResult = await ipfsRes.json();
+      const ipfsHash = ipfsResult.IpfsHash;
 
       if (ipfsHashes.includes(ipfsHash)) {
         toast.error('This file has already been uploaded.');
@@ -175,7 +184,22 @@ const UploadContent = () => {
         download
       };
 
+      // Store file metadata in MongoDB
       try {
+        const mongoFormData = new FormData();
+        mongoFormData.append('file', file);
+        mongoFormData.append('filename', title);
+        mongoFormData.append('fileDescription', description);
+        mongoFormData.append('ownerName', account);
+        mongoFormData.append('dateCreated', new Date().toISOString());
+        mongoFormData.append('price', price);
+
+        const mongoResult = await uploadFile(mongoFormData).unwrap();
+        if (!mongoResult.fileId) {
+          throw new Error('Failed to store file metadata in MongoDB');
+        }
+
+        // Submit content for review after successful MongoDB storage
         const submissionResult = await submitContentForReview(title, description, ipfsHash, price, contentType, permissions);
 
         if (submissionResult.success) {
