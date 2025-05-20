@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.6",
+    "caniuse-lite": "^1.0.30001718",
     "dotenv": "^16.4.5",
     "ethers": "^6.11.1"
   }
