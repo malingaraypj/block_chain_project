@@ -19,7 +19,7 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     uploadFile: builder.mutation({
       query: (formData) => ({
-        url: 'files/upload',
+        url: 'api/files/upload',
         method: 'POST',
         body: formData,
         formData: true,

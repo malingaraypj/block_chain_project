@@ -65,6 +65,10 @@ contract ContentPlatform is Ownable {
     }
 
     
+    error InvalidIPFSHash();
+    error InvalidPrice();
+    error ContentNotPending();
+
     function submitContentForReview(
             string memory _title,
             string memory _description,
@@ -73,7 +77,8 @@ contract ContentPlatform is Ownable {
             ContentType _contentType,
             Permission memory _permissions
         ) public {
-            require(bytes(_ipfsHash).length > 0, "IPFS hash is required");
+            require(bytes(_ipfsHash).length > 0, "IPFS hash cannot be empty");
+            require(_price >= 0, "Price must be non-negative");
 
             contentCount++;
             contents[contentCount] = Content(
@@ -102,10 +107,10 @@ contract ContentPlatform is Ownable {
 
     function approveContent(uint256 _id, string memory _ipfsHash) public onlyOwner {
         Content storage content = contents[_id];
-        require(content.status == ContentStatus.Pending, "Content is not pending approval.");
+        if(content.status != ContentStatus.Pending) revert ContentNotPending();
 
         bytes32 contentHash = keccak256(abi.encodePacked(_ipfsHash));
-        require(!existingContentHashes[contentHash], "Similar content already exists.");
+        if(existingContentHashes[contentHash]) revert("Content hash already exists");
 
         content.ipfsHash = _ipfsHash;
         content.isActive = true;

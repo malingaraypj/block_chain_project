@@ -2,12 +2,13 @@ const hre = require("hardhat");
 
 async function main() {
 
-  const content = await hre.ethers.deployContract("ContentPlatform");
+  const ContentPlatform = await hre.ethers.getContractFactory("ContentPlatform");
+  const contentPlatform = await ContentPlatform.deploy();
 
-  await content.waitForDeployment();
+  await contentPlatform.waitForDeployment();
 
   console.log(
-    `content deployed to ${content.target}`
+    `ContentPlatform deployed to ${contentPlatform.target}`
   );
 }
 

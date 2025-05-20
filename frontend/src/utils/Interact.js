@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import ContentPlatform from './ContentPlatform.json';
 
-const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'; // Local hardhat default deployment address
+const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
 
 const apiUrl = 'http://localhost:5000/auth';
 
@@ -94,12 +94,17 @@ export const submitContentForReview = async (title, description, ipfsHash, price
       ethers.utils.parseEther(price),
       contentType,
       permissions
-    );
+    ).catch(error => {
+      throw new Error(error.reason || error.message);
+    });
     await tx.wait();
     return { success: true };
   } catch (error) {
-    console.error('Error submitting content for review:', error);
-    return { success: false, message: error.message };
+    console.error('Transaction error:', error);
+    return { 
+      success: false, 
+      message: error.message.includes('revert') ? error.message.split('revert')[1].trim() : error.message
+    };
   }
 };
 

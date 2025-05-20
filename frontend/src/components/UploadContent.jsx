@@ -267,9 +267,9 @@ const UploadContent = () => {
     fetchSalesDataForCreator();
   };
 
-  const handleSalesTabChange = (tab) => {
-    setActiveSalesTab(tab);
-  };
+  // const handleSalesTabChange = (tab) => {
+  //   setActiveSalesTab(tab);
+  // };
 
   const getImageForContentType = (contentType) => {
     switch (contentType) {
