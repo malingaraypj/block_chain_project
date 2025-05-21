@@ -69,6 +69,11 @@ contract ContentPlatform is Ownable {
     error InvalidPrice();
     error ContentNotPending();
 
+    error InvalidTitle();
+    error InvalidDescription();
+    error InvalidPermissions();
+    error InvalidContentType();
+
     function submitContentForReview(
             string memory _title,
             string memory _description,
@@ -77,9 +82,19 @@ contract ContentPlatform is Ownable {
             ContentType _contentType,
             Permission memory _permissions
         ) public {
-            require(bytes(_ipfsHash).length > 0, "IPFS hash cannot be empty");
-            require(_price >= 0, "Price must be non-negative");
+            // Input validation
+            if (bytes(_ipfsHash).length == 0) revert InvalidIPFSHash();
+            if (bytes(_title).length == 0) revert InvalidTitle();
+            if (bytes(_description).length == 0) revert InvalidDescription();
+            if (uint(_contentType) > uint(ContentType.Music)) revert InvalidContentType();
+            if (_price == 0) revert InvalidPrice();
+            
+            bytes32 contentHash = keccak256(abi.encodePacked(_ipfsHash));
+            if (existingContentHashes[contentHash]) revert InvalidIPFSHash();
 
+            if (!(_permissions.viewOnly || _permissions.download)) revert InvalidPermissions();
+
+            // Create content
             contentCount++;
             contents[contentCount] = Content(
                 contentCount,
@@ -115,10 +130,9 @@ contract ContentPlatform is Ownable {
         content.ipfsHash = _ipfsHash;
         content.isActive = true;
         content.status = ContentStatus.Approved;
-        existingContentHashes[contentHash] = true;
-
         emit ContentApproved(_id, msg.sender);
         emit ContentCreated(_id, content.creator, content.title, content.description, _ipfsHash, content.price, content.contentType);
+        existingContentHashes[contentHash] = true;
     }
 
     function rejectContent(uint256 _id) public onlyOwner {
