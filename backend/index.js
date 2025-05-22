@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const authRoutes = require('./routes/authRoute');
 const errorHandler = require('./utils/errorHandler');
 const fileRoutes = require('./routes/fileRoutes'); // Import file routes
@@ -12,6 +13,10 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from the 'files' directory
+app.use('/files', express.static(path.join(__dirname, 'files')));
+
   // app.use(session({
 //   secret: 'usmael',
 //   resave: false,

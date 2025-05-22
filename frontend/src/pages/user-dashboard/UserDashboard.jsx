@@ -6,28 +6,49 @@ import Greetings from "../../components/greeting";
 import Search from "../../components/search";
 import Tab from "../../components/Tab";
 import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
 const UserDashboard = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [activeTab, setActiveTab] = useState(1);
-  const userInfo = getUserInfo()[0]; // Assume getUserInfo() is defined elsewhere
+  const [assets, setAssets] = useState([]);
+  const userInfo = getUserInfo()[0]; 
+
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const response = await axios.get("/api/files");
+        setAssets(response.data);
+      } catch (error) {
+        console.error("Error fetching assets", error);
+      }
+    };
+    fetchAssets();
+  }, []);
 
   const toggleSearch = () => setShowSearch(!showSearch);
 
   const handleTabChange = (tabIndex) => setActiveTab(tabIndex);
 
   const renderContentByType = (type) => {
-    const content = userInfo[type] || [];
+    const contentTypeMap = {
+      Ebook: ['application/pdf', 'text/plain'], // Add more ebook MIME types if needed
+      Video: ['video/mp4', 'video/quicktime'], // Add more video MIME types if needed
+      Music: ['audio/mpeg', 'audio/wav'] // Add more music MIME types if needed
+    };
+    const allowedTypes = contentTypeMap[type];
+    const content = assets.filter(asset => allowedTypes.some(allowedType => asset.contentType.includes(allowedType)));
     if (content.length === 0) {
-      return <div className="justify-center ">You don &apos;  t have any {type} yet!</div>;
+      return <div className="justify-center">You don't have any {type} yet!</div>;
     }
     return (
       <div>
         <h1 className="text-2xl font-bold mb-4">{type}</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {content.map((item) => (
-            <div key={item.id} className="bg-gray-100 p-4 rounded-md border border-gray-300">
-              <h2 className="text-lg font-bold">{item.name}</h2>
-              <p className="text-gray-600">{item.description}</p>
+            <div key={item._id} className="bg-gray-100 p-4 rounded-md border border-gray-300">
+              <h2 className="text-lg font-bold">{item.filename}</h2>
+              <p className="text-gray-600">{item.fileDescription}</p>
             </div>
           ))}
         </div>
@@ -36,10 +57,14 @@ const UserDashboard = () => {
   };
 
   const renderUsageHistory = () => {
+    const ebookCount = assets.filter(asset => ['application/pdf', 'text/plain'].some(allowedType => asset.contentType.includes(allowedType))).length;
+    const videoCount = assets.filter(asset => ['video/mp4', 'video/quicktime'].some(allowedType => asset.contentType.includes(allowedType))).length;
+    const musicCount = assets.filter(asset => ['audio/mpeg', 'audio/wav'].some(allowedType => asset.contentType.includes(allowedType))).length;
+
     const data = [
-      { name: "Ebook", value: userInfo.Ebook?.length || 0, fill: "#8884d8" },
-      { name: "Video", value: userInfo.Video?.length || 0, fill: "#83a6ed" },
-      { name: "Music", value: userInfo.Music?.length || 0, fill: "#8dd1e1" }
+      { name: "Ebook", value: ebookCount, fill: "#8884d8" },
+      { name: "Video", value: videoCount, fill: "#83a6ed" },
+      { name: "Music", value: musicCount, fill: "#8dd1e1" }
     ];
 
     return (

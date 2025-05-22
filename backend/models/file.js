@@ -8,7 +8,8 @@ const fileSchema = new mongoose.Schema({
   dateAdded: { type: Date, default: Date.now },
   price: { type: Number, required: true },
   contentType: { type: String, required: true },
-  data: { type: String, required: true } // Base64 encoded data
+  filePath: { type: String, required: true }, // Path to the stored file
+  originalName: { type: String, required: true } // Original filename
 });
 
 module.exports = mongoose.model('File', fileSchema);

@@ -44,8 +44,7 @@ contract ContentPlatform is Ownable {
         uint256 price,
         ContentType contentType
     );
-    event ContentApproved(uint256 indexed id, address indexed admin);
-    event ContentRejected(uint256 indexed id, address indexed admin);
+    
     event ContentCreated(uint256 indexed id, address indexed creator, string title, string description, string ipfsHash, uint256 price, ContentType contentType);
     event ContentPurchased(uint256 indexed id, address indexed buyer, address indexed creator, string ipfsHash, uint256 price);
     event ContentDeleted(uint256 indexed id, address indexed creator);
@@ -67,7 +66,7 @@ contract ContentPlatform is Ownable {
     
     error InvalidIPFSHash();
     error InvalidPrice();
-    error ContentNotPending();
+    
 
     error InvalidTitle();
     error InvalidDescription();
@@ -103,9 +102,9 @@ contract ContentPlatform is Ownable {
                 _description,
                 _ipfsHash,
                 _price,
-                false,
+                true,
                 _contentType,
-                ContentStatus.Pending,
+                ContentStatus.Approved,
                 _permissions
             );
 
@@ -120,27 +119,7 @@ contract ContentPlatform is Ownable {
             );
         }
 
-    function approveContent(uint256 _id, string memory _ipfsHash) public onlyOwner {
-        Content storage content = contents[_id];
-        if(content.status != ContentStatus.Pending) revert ContentNotPending();
-
-        bytes32 contentHash = keccak256(abi.encodePacked(_ipfsHash));
-        if(existingContentHashes[contentHash]) revert("Content hash already exists");
-
-        content.ipfsHash = _ipfsHash;
-        content.isActive = true;
-        content.status = ContentStatus.Approved;
-        emit ContentApproved(_id, msg.sender);
-        emit ContentCreated(_id, content.creator, content.title, content.description, _ipfsHash, content.price, content.contentType);
-        existingContentHashes[contentHash] = true;
-    }
-
-    function rejectContent(uint256 _id) public onlyOwner {
-        Content storage content = contents[_id];
-        require(content.status == ContentStatus.Pending, "Content is not pending approval.");
-        content.status = ContentStatus.Rejected;
-        emit ContentRejected(_id, msg.sender);
-    }
+    
 
     
 
@@ -149,7 +128,7 @@ contract ContentPlatform is Ownable {
     }
 
     
-    function toggleContentStatus(uint256 _id) public onlyCreator(_id) {
+    function toggleContentStatus(uint256 _id) public {
         contents[_id].isActive = !contents[_id].isActive;
     }
 
